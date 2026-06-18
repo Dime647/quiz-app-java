@@ -1,0 +1,21 @@
+[{
+  "type": "MCQ",
+  "questionText": "What is the Capital of India?",
+  "marks": 10,
+  "options": ["Mumbai","New Delhi","Paris","Kolkata"],
+  "correctIndex": 1
+},
+  {
+    "type": "TrueFalse",
+    "questionText": "Is Java a OOP?",
+    "marks": 5,
+    "correctAnswer": true
+  },
+  {
+    "type": "MCQ",
+    "questionText": "What is 6+7?",
+    "marks": 10,
+    "options": ["25","76","67","13"],
+    "correctIndex": 3
+  }
+  ]

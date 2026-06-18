@@ -1,3 +1,12 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.*;
 
 abstract class Question {
@@ -134,14 +143,60 @@ class Quiz {
 
 public class Main{
     public static void main(String[] args) {
-        List<Question> questions = new ArrayList<>();
-        questions.add(new MCQQuestion("What is the Capital of India?", 10, Arrays.asList("Mumbai", "New Delhi", "Paris", "Kolkata"),1));
-        questions.add(new TrueFalseQuestion(("Is Java a OOP language?"), 5, true));
-        questions.add(new MCQQuestion("What is 6+7?", 10, Arrays.asList("25", "76", "67", "13"), 3));
+        FileHandler fileHandler= new FileHandler("quiz.json");
+        List<Question>questions= fileHandler.loadQuestions();
 
         Player player = new Player("Atharva");
         Quiz quiz = new Quiz(questions, player);
         quiz.start();
-
     }
 }
+
+class FileHandler{
+    private String filepath;
+
+    FileHandler(String filepath){
+        this.filepath=filepath;
+    }
+
+    public List<Question> loadQuestions(){
+        try{
+            BufferedReader reader= new BufferedReader(new FileReader(filepath));
+            StringBuilder sb= new StringBuilder();
+            String line;
+            while((line=reader.readLine())!=null){
+                sb.append(line);
+            }
+            reader.close();
+
+            String content = sb.toString();
+
+            Gson gson = new Gson();
+            JsonArray jsonArray= JsonParser.parseString(content).getAsJsonArray();
+            List<Question>questions= new ArrayList<>();
+
+            for (JsonElement element: jsonArray){
+                JsonObject obj= element.getAsJsonObject();
+                String type= obj.get("type").getAsString();
+                String questionText= obj.get("questionText").getAsString();
+                int marks= obj.get("marks").getAsInt();
+
+                if(type.equals("MCQ")) {
+                    Type listType = new TypeToken<List<String>>() {
+                    }.getType();
+                    List<String> options = gson.fromJson(obj.get("options"), listType);
+                    int correctIndex = obj.get("correctIndex").getAsInt();
+                    questions.add(new MCQQuestion(questionText, marks, options, correctIndex));
+                }else if(type.equals("TrueFalse")){
+                    boolean correctAnswer = obj.get("correctAnswer").getAsBoolean();
+                    questions.add(new TrueFalseQuestion(questionText, marks, correctAnswer));
+                }
+            }
+            return questions;
+        }catch(Exception e){
+            System.out.println("Error:"+e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+}
+
