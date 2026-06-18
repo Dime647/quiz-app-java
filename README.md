@@ -35,8 +35,8 @@ Follow the on-screen prompts to start the quiz, answer questions, and view your 
 
 ## Roadmap
 
+- [x] FileHandler — load questions from a `questions.json` file using Gson
 - [ ] Leaderboard — store and display top scores
-- [ ] FileHandler — load questions from a `questions.json` file using Gson
 - [ ] Persist player scores across sessions
 
 ## Author
